@@ -1,52 +1,76 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Alert, TouchableOpacity } from 'react-native';
+import Square from './Square';
 
 const Board = () => {
-  const [gameTurn, changeTurn] = useState(0);
-  const [spotStatus, setSpot] = useState(<Text>-</Text>);
+  const [gameTurn, changeTurn] = useState(true);
+  const [squares, fillSquares] = useState(Array(9).fill(null));
 
-  const play = (key) => {
-    Alert.alert('Esta es la key: '+ key)
-    changeTurn(!gameTurn)
+  const renderSpot = (key) => {
+    if (squares[key] == null) {
+      const spot = squares.slice();
+      switch (gameTurn) {
+        case true:
+          spot[key] = 'X';
+          break;
+        case false:
+          spot[key] = 'O';
+          break;
+        default:
+          break;
+      }
+      fillSquares(spot);
+      changeTurn(!gameTurn)
+    } else {
+      Alert.alert('Este cuadro ya está ocupado >:c')
+      return;
+    }
+
+  } 
+
+  const renderSquare = (i) => {
+    return <Square spot={squares[i]} clickFunc={() => renderSpot(i)} />
   }
+
+  // const play = (key) => {
+  //   Alert.alert('Esta es la key: '+ key)
+  //   changeTurn(!gameTurn)
+  // }
 
   const showCurrentPlayer = (turn) => {
-    switch (turn) {
-      case 0:
-        return '0';
-      case 1:
-        return '1';
-      default:
-        break;
-    }
+  if (turn) {
+    return 'X';
+  } else {
+    return 'O';
+  }
   }
 
-  const renderSpot = (spot, set) => {
-    if (spot == 1 && gameTurn == 0 || spot == 2 && gameTurn == 0 || spot == 3 && gameTurn == 0) {
-      return 'X';
-    }
-    if (spot == 1 || spot == 2 || spot == 3 && gameTurn == 1) {
-      return 'Y';
-    }
-  } 
+  const resetGame = () => {
+    Alert.alert('hola')
+    changeTurn(true);
+    fillSquares(Array(9).fill(null))
+  }
 
   return (
     <View>
       <Text>Es el turno de: {showCurrentPlayer(gameTurn)}</Text>
       <View style={styles.boardRow}>
-        <TouchableOpacity style={styles.square} onPress={() =>play(1)}><Text>{renderSpot(1)}</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(2)}><Text>{renderSpot(2)}</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(3)}><Text>{renderSpot(3)}</Text></TouchableOpacity>
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
       </View>
       <View style={styles.boardRow}>
-        <TouchableOpacity style={styles.square} onPress={() =>play(4)}>{renderSpot(4)}</TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(5)}>{renderSpot(5)}</TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(6)}>{renderSpot(6)}</TouchableOpacity>
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
       </View>
       <View style={styles.boardRow}>
-        <TouchableOpacity style={styles.square} onPress={() =>play(7)}>{renderSpot(7)}</TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(8)}>{renderSpot(8)}</TouchableOpacity>
-        <TouchableOpacity style={styles.square} onPress={() =>play(9)}>{renderSpot(9)}</TouchableOpacity>
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </View>
+      <View>
+        <TouchableOpacity onPress={() => {fillSquares(Array(9).fill(null)); changeTurn(true)}}><Text>Limpiar</Text></TouchableOpacity>
       </View>
     </View>
   )
@@ -57,14 +81,5 @@ export default Board;
 const styles = StyleSheet.create({
   boardRow: {
     flexDirection: 'row',
-  },
-  square: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#999',
-    width: 100,
-    height: 100,
-    fontSize: 30
   }
 })
